@@ -1,2 +1,3 @@
 PlotVR/__pycache__/
 PlotVR/tmp*
+.pylint.d/

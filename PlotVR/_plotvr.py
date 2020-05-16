@@ -21,7 +21,7 @@ TODO: add color, size, and marker to scatterplot
 
 __all__ = ['scene', 'plot', 'show']
 
-from ._artists import *
+from ._artists import Scene, MarkerSet
 
 __all_scenes = {}
 __current_scene = None
@@ -32,7 +32,7 @@ def scene(num=None):
     global __current_scene, __all_scenes
 
     if num is None:
-        num_scenes = [x for x in __all_scenes.keys() if type(x) is int ]
+        num_scenes = [x for x in __all_scenes if isinstance(x, int)]
         if num_scenes:
             num = max(num_scenes) + 1
         else:
@@ -46,16 +46,13 @@ def scene(num=None):
 
     return __current_scene
 
-def plot(x, y, z):
+def plot(x, y, z, color="#FFFFFF"):
     global __current_scene
 
     if __current_scene is None:
         scene()
-
     frame = __current_scene.gcf()
-
-    for i in range(len(x)):
-        frame.append(__current_scene.soup.new_tag("a-sphere", position=f"{x[i]} {y[i]} {z[i]}", radius="0.1", color="#EF2D5E"))
+    frame.add_artist(MarkerSet(parent=frame, x=x, y=y, z=z, color=color))
 
 def show():
     global __current_scene, __all_scenes

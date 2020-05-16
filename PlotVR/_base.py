@@ -6,10 +6,15 @@ Created on Sat Apr 18 20:47:13 2020
 """
 
 class Artist():
-    def __init__(self):
-        self._parent = None
+    def __init__(self, parent=None):
+        self._parent = parent
         self._kids = []
         self._a_entity = None
+        if self._parent is not None:
+            self.soup = self._parent.soup
+
+    def add_artist(self, a):
+        self._kids.append(a)
 
     def show(self):
         for kid in self._kids:

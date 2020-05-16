@@ -25,14 +25,12 @@ class Scene(Artist):
       <title>PlotVR Figure</title>
       <body>
         <a-scene>
-            <a-light type="ambient" color="#222"></a-light>
-            <a-light type="directional" castShadow="true;" position="0 4 1"></a-light>
-            <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#222" shadow="receive: true"></a-plane>
+            <a-light type="ambient" color="#888"></a-light>
+            <a-light type="directional" castShadow="true;" position="0 3 0"></a-light>
+            <a-plane position="0 0 0" rotation="-90 0 0" width="6" height="6" color="#444" shadow="receive: true"></a-plane>
             <a-sky color="#000000"></a-sky>
 
             <a-entity id="content"></a-entity>
-
-            <a-entity id="frame" position="0 1.5 -4" scale="0.1 0.1 0.1" shadow="receive: false"></a-entity>
 
         </a-scene>
       </body>
@@ -41,7 +39,9 @@ class Scene(Artist):
 
     def __init__(self, name=None):
         super(Scene, self).__init__()
+
         self.soup = BeautifulSoup(Scene.__html_template, features="html.parser")
+
         if name is not None:
             if type(name) is str:
                 self.soup.title.string = name
@@ -53,23 +53,55 @@ class Scene(Artist):
         self._a_entity = self.soup.find_all(id='content')[0]
 
         #TODO: add frame as child
-
-        #TODO: obsolete
-        self.frames = self.soup.find_all(id='frame')
-        self._current_frame = self.frames[0]
+        frame = Frame(parent=self)
+        self._kids.append(frame)
+        self._current_frame = frame
 
     def gcf(self):
         return self._current_frame
 
     def show(self):
-        Artist.show(self)
+        super(Scene, self).show()
 
         with tempfile.NamedTemporaryFile('w', delete=False, prefix='PlotVR_', suffix='.html') as f:
             f.write(str(self.soup))
             webbrowser.open('file://' + os.path.realpath(f.name), new=0)
 
 class Frame(Artist):
-    pass
+    def __init__(self, parent):
+        super(Frame, self).__init__(parent)
+        a_parent = self._parent.get_a_entity()
+        self._a_entity = self.soup.new_tag("a-entity", id='frame',
+                                                             position="0 1.5 -1",
+                                                             scale="1 1 1",
+                                                             shadow="receive: false")
+
+        a_parent.append(self._a_entity)
+        # self._a_entity.append(self.soup.new_tag("a-entity", id='wireframe',
+        #                                         geometry="primitive: box",
+        #                                         material="color: blue",
+        #                                        ))
+
+        self._a_entity.append(self.soup.new_tag("a-entity", id='axes',
+                                                line__0="start: 0, 0, 0; end: 1 0 0; color: red",
+                                                line__1="start: 0, 0, 0; end: 0 1 0; color: green",
+                                                line__2="start: 0, 0, 0; end: 0 0 1; color: blue",
+
+                                               ))
+
 
 class MarkerSet(Artist):
-    pass
+    def __init__(self, parent, x, y, z, color="#EF2D5E"):
+
+        super(MarkerSet, self).__init__(parent)
+        a_parent = self._parent.get_a_entity()
+        self._a_entity = self.soup.new_tag("a-entity", id='markerset',
+                                           shadow="receive: false")
+        a_parent.append(self._a_entity)
+
+        for i in zip(x, y, z):
+            self._a_entity.append(self.soup.new_tag("a-sphere",
+                                                    position=f'{i[0]} {i[1]} {i[2]}',
+                                                    radius="0.01",
+                                                    color=color,
+                                                    shadow="receive: false"))
