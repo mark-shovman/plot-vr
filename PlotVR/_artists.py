@@ -25,13 +25,9 @@ class Scene(Artist):
       <title>PlotVR Figure</title>
       <body>
         <a-scene>
-            <a-light type="ambient" color="#888"></a-light>
-            <a-light type="directional" castShadow="true;" position="0 3 0"></a-light>
             <a-plane position="0 0 0" rotation="-90 0 0" width="6" height="6" color="#444" shadow="receive: true"></a-plane>
-            <a-sky color="#000000"></a-sky>
-
+            <a-sky color="#111"></a-sky>
             <a-entity id="content"></a-entity>
-
         </a-scene>
       </body>
     </html>
@@ -52,7 +48,6 @@ class Scene(Artist):
 
         self._a_entity = self.soup.find_all(id='content')[0]
 
-        #TODO: add frame as child
         frame = Frame(parent=self)
         self._kids.append(frame)
         self._current_frame = frame
@@ -72,21 +67,23 @@ class Frame(Artist):
         super(Frame, self).__init__(parent)
         a_parent = self._parent.get_a_entity()
         self._a_entity = self.soup.new_tag("a-entity", id='frame',
-                                                             position="0 1.5 -1",
+                                                             position="0 1 -1.5",
                                                              scale="1 1 1",
-                                                             shadow="receive: false")
+                                                             shadow='cast:false; receive:false')
 
         a_parent.append(self._a_entity)
-        # self._a_entity.append(self.soup.new_tag("a-entity", id='wireframe',
-        #                                         geometry="primitive: box",
-        #                                         material="color: blue",
-        #                                        ))
+        self._a_entity.append(self.soup.new_tag("a-entity", id='framebounds',
+                                                geometry="primitive: box",
+                                                position="0.5 0.5 0.5",
+                                                material="color: blue; side:back; transparent:true; opacity:0.2; flatShading: true",
+                                                shadow='cast:false; receive:false'
+                                                ))
 
         self._a_entity.append(self.soup.new_tag("a-entity", id='axes',
                                                 line__0="start: 0, 0, 0; end: 1 0 0; color: red",
                                                 line__1="start: 0, 0, 0; end: 0 1 0; color: green",
                                                 line__2="start: 0, 0, 0; end: 0 0 1; color: blue",
-
+                                                shadow='cast:false; receive:false'
                                                ))
 
 
@@ -96,7 +93,7 @@ class MarkerSet(Artist):
         super(MarkerSet, self).__init__(parent)
         a_parent = self._parent.get_a_entity()
         self._a_entity = self.soup.new_tag("a-entity", id='markerset',
-                                           shadow="receive: false")
+                                           shadow='cast:false; receive:false')
         a_parent.append(self._a_entity)
 
         for i in zip(x, y, z):
@@ -104,4 +101,5 @@ class MarkerSet(Artist):
                                                     position=f'{i[0]} {i[1]} {i[2]}',
                                                     radius="0.01",
                                                     color=color,
-                                                    shadow="receive: false"))
+                                                    shadow='cast:true; receive:false'
+                                                    ))
