@@ -4,8 +4,20 @@ Created on Sat Apr 18 20:47:13 2020
 
 @author: mark.shovman
 """
-class Space():
-    pass
+
+class Artist():
+    def __init__(self):
+        self._parent = None
+        self._kids = []
+        self._a_entity = None
+
+    def show(self):
+        for kid in self._kids:
+            kid.show()
+
+    def get_a_entity(self):
+        return self._a_entity
+
 
 class Renderer():
     """
@@ -29,7 +41,3 @@ class Event():
     """
     pass
 
-
-
-class Artist():
-    pass
