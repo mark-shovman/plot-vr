@@ -10,6 +10,9 @@ import os
 import tempfile
 import webbrowser
 
+# from IPython.core.display import display, HTML
+# from IPython.display import IFrame
+
 from bs4 import BeautifulSoup
 
 from ._base import Artist
@@ -58,9 +61,26 @@ class Scene(Artist):
     def show(self):
         super(Scene, self).show()
 
+        # display(HTML(str(self.soup)))
+
         with tempfile.NamedTemporaryFile('w', delete=False, prefix='PlotVR_', suffix='.html') as f:
             f.write(str(self.soup))
+            # display(IFrame(src=f.name, width=700, height=600))
             webbrowser.open('file://' + os.path.realpath(f.name), new=0)
+
+    def _repr_html_(self):
+        """
+
+        TODO: return an html representation, for use in Jupyter
+        https://ipython.readthedocs.io/en/stable/config/integrating.html#rich-display
+
+        Returns
+        -------
+        None.
+
+        """
+
+        pass
 
 class Frame(Artist):
     def __init__(self, parent):

@@ -33,7 +33,7 @@
 * TBD: Danny in VR, Bob (the boss, not a data analyst) not in VR; -or- Bob in VR, Danny outside talking Bob through it
 
 ##Symmetric presentation
-* TBD: Danny, Bob and Alice are all in the same VR space
+* TBD: Danny, Bob and Alice are all in the same VR space, Danny tells a story.
 
 #Tech stack
 * A-frame for VR rendering
@@ -105,6 +105,14 @@ So, it seems that, though I like the architecture, most of it will have to be re
 * can/should I avoid writing dedicated entites in a-frame? I can, in principle, move all the backend, and even artists, to a-frame primitives, and leave only thin wrappers in python.
 
 * I wonder how mpl handles statefulness - what's the backend, for instance. Checked in C:\Anaconda3\Lib\site-packages\matplotlib. OMG what a mess O.O
+
+##30 May 2020
+
+* Since April, implemented Artist/Scripting layer, multiple Scenes, and multiple plots in a scene. Did not log much because COVID-19.
+
+* Next step - Axes, bounding boxes, etc.
+
+* Tried to show the scene in Jupyter via IFrame. Almost works, but fails on 'jquery.min.js:6084 Not allowed to load local resource'. There are ways around it, e.g. saving the temp file in a project dorectory. Later.
 
 
 
