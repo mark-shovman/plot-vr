@@ -8,9 +8,9 @@
 * home/save/2D snapshot menu
 * API similar to matplotlib or seaborn
 
-#User stories
+# User stories
 
-##Single-user
+## Single-user
 * Danny (teh data analyst) is writing python code analysing some data.
 * He imports this module, and calls its function to plot his data.
 * A plot window opens, similar to 3D plot of matplotlib, but with an additional button 'View in VR'
@@ -18,7 +18,7 @@
 * He can rotate/move/scale it with controllers, like in Google Sketch
 * There is a hand-held palette menu (again, like in Sketch) with options like 'Reset View', 'Save 3D', 'Save 2D' etc.
 
-##Asymmetric collaboration
+## Asymmetric collaboration
 * Alice (Danny's colleague) comes up to his table to discuss the data, but there is only one VR headset.
 * Danny, wearing the headset, positions a 'camera' gewgaw (3D UI element) in VR.
 * this gewgaw corresponds and controls the window view of the data that Alice can see and interact with.
@@ -26,21 +26,21 @@
 * it can be moved by Danny in VR, or by Alice outside, using the standard 3D mouse controls.
 * mouse selection by Alice is visible to Danni as a ray coming from the gewgaw, highlighting parts of the plotted data.
 
-##Symmetric collaboration
+## Symmetric collaboration
 * TBD: Danny and Alice are both in VR, in the same virtual space created by Danny
 
-##Asymmetric presentation
+## Asymmetric presentation
 * TBD: Danny in VR, Bob (the boss, not a data analyst) not in VR; -or- Bob in VR, Danny outside talking Bob through it
 
-##Symmetric presentation
+## Symmetric presentation
 * TBD: Danny, Bob and Alice are all in the same VR space, Danny tells a story.
 
-#Tech stack
+# Tech stack
 * A-frame for VR rendering
 * BS4 for html generation
 * pandas for data
 
-#TODOs
+# TODOs
 * check existing solutions (if any)
 	* https://www.google.co.il/search?hl=iw&q=data+plot+in+vr
 	* https://medium.com/inborn-experience/data-visualization-in-virtual-reality-a-vr-demo-project-a31c577aaefc done in Unity, a week-lomg student project, nice use of grid and shadow.
@@ -60,12 +60,12 @@
     * https://ephtracy.github.io/index.html?page=mv_main - MagicaVoxel, for volumetric viz
 	* PyOpenVR, PyOpenGL, PyQt4
 
-#Diary and ruminations
+# Diary and ruminations
 
-##12 Apr 2020
+## 12 Apr 2020
 Much of the functionality I need here is already implemented in matplotlib. would it be possible to use it instead of rewriting it? Started reading http://www.aosabook.org/en/matplotlib.html , a chapter on matplotlib architecture. Lovely reading, so far seems like injecting my bits into matplotlib is a good idea.
 
-##14 Apr 2020
+## 14 Apr 2020
 Learning about matplotlib, and considering my case.
 * The backend layer is different, and the render primitives are probably different
 	* **FigureCanvas** is now a space
@@ -97,7 +97,7 @@ So, it seems that, though I like the architecture, most of it will have to be re
 * https://vita.had.co.nz/papers/letter-value-plot.html - https://seaborn.pydata.org/generated/seaborn.boxenplot.html#seaborn.boxenplot - similar to my stackplot, but Balalaika is still better :D
 * Idea - combo of linear and log scale, where an axis is linear till 10**n, and log afterwards. must sketch and try - should be clearly visible, yet not messy.
 
-##18 Apr 2020
+## 18 Apr 2020
 * Still thinking about architecture. Backend is currently a-frame, good idea to abstract it in case a-frame is no good. However, I think it's safe to assume that the backend will have some sort of a scenegraph implemented, so transforms are basically taken care of there - thus, it makes sense to tie artists closer to the backend. For a-frame, at least, I think, an artist should have a connection to the point in scenegraph; renderer should be a thin wrapper around a-frame soup.
 
 * might have to dive into https://threejs.org/ directly.
@@ -106,7 +106,7 @@ So, it seems that, though I like the architecture, most of it will have to be re
 
 * I wonder how mpl handles statefulness - what's the backend, for instance. Checked in C:\Anaconda3\Lib\site-packages\matplotlib. OMG what a mess O.O
 
-##30 May 2020
+## 30 May 2020
 
 * Since April, implemented Artist/Scripting layer, multiple Scenes, and multiple plots in a scene. Did not log much because COVID-19.
 
