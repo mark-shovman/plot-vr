@@ -4,8 +4,9 @@ Created on Tue Apr  7 22:32:37 2020
 
 @author: mark.shovman
 
-TODO: separation of axes (scale, axes legend) and frame (position in scene)
 TODO: support for multiple frames in a scene, automatic positioning of the next frame
+TODO: separation of axes (scale, axes legend) and frame (position in scene)
+
 """
 
 import numpy as np

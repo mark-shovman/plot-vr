@@ -20,26 +20,18 @@ from ._base import Artist
 __all__ = ['Scene', 'Frame']
 
 class Scene(Artist):
-    __html_template = """
-    <html>
-      <head>
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-      </head>
-      <title>PlotVR Figure</title>
-      <body>
-        <a-scene>
-            <a-plane position="0 0 0" rotation="-90 0 0" width="6" height="6" color="#444" shadow="receive: true"></a-plane>
-            <a-sky color="#111"></a-sky>
-            <a-entity id="content"></a-entity>
-        </a-scene>
-      </body>
-    </html>
-    """
+    __html_template_fname = "_scene_template.html"
 
     def __init__(self, name=None):
         super(Scene, self).__init__()
-
-        self.soup = BeautifulSoup(Scene.__html_template, features="html.parser")
+        
+        try:
+            self_path = os.path.dirname(__file__)
+        except NameError:
+            self_path = ''
+        
+        with open(os.path.join(self_path, Scene.__html_template_fname)) as fp:
+            self.soup = BeautifulSoup(fp, features="html.parser")
 
         if name is not None:
             if type(name) is str:
@@ -96,7 +88,8 @@ class Frame(Artist):
                                                 geometry="primitive: box",
                                                 position="0.5 0.5 0.5",
                                                 material="color: blue; side:back; transparent:true; opacity:0.2; flatShading: true",
-                                                shadow='cast:false; receive:false'
+                                                shadow='cast:false; receive:false',
+                                                mixin='frame_mix'
                                                 ))
 
         self._a_entity.append(self.soup.new_tag("a-entity", id='axes',
