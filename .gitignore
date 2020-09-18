@@ -1,3 +1,4 @@
 PlotVR/__pycache__/
 PlotVR/tmp*
 .pylint.d/
+.ipynb_checkpoints/

@@ -10,8 +10,8 @@ import os
 import tempfile
 import webbrowser
 
-# from IPython.core.display import display, HTML
-# from IPython.display import IFrame
+from IPython.core.display import display, HTML
+from IPython.display import IFrame
 
 from bs4 import BeautifulSoup
 
@@ -53,12 +53,12 @@ class Scene(Artist):
     def show(self):
         super(Scene, self).show()
 
-        # display(HTML(str(self.soup)))
-
-        with tempfile.NamedTemporaryFile('w', delete=False, prefix='PlotVR_', suffix='.html') as f:
+        fname = f'./PlotVR_{self.soup.title.string}.html'
+        # with tempfile.NamedTemporaryFile('w', delete=False, prefix='PlotVR_', suffix='.html') as f:
+        with open(fname, 'w') as f:
             f.write(str(self.soup))
-            # display(IFrame(src=f.name, width=700, height=600))
-            webbrowser.open('file://' + os.path.realpath(f.name), new=0)
+            display(IFrame(src=fname, width=700, height=600))
+            # webbrowser.open('file://' + os.path.realpath(f.name), new=0)
 
     def _repr_html_(self):
         """
@@ -72,7 +72,7 @@ class Scene(Artist):
 
         """
 
-        pass
+        return str(self.soup)
 
 class Frame(Artist):
     def __init__(self, parent):
