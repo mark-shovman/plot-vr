@@ -151,6 +151,8 @@ When adding a new artist class:
 
 ## Workflow
 
+Development happens on the `master` branch directly.
+
 There are no build, lint, or test commands. The typical development loop is:
 
 1. Edit Python files in `PlotVR/`
@@ -161,14 +163,17 @@ To test in VR: open the HTML file in a browser connected to a WebXR device (e.g.
 
 ---
 
-## Roadmap (from README and code TODOs)
+## Roadmap
+
+Tracked as GitHub issues on mark-shovman/plot-vr.
 
 - [x] Separate `Frame` (position in scene) from `Axes` (scale, tick marks, labels)
-- [ ] Add wobble/physics to frames
-- [ ] Add color, size, and marker type parameters to scatter plots
-- [ ] Implement `Renderer` backend primitives
-- [ ] Implement VR controller `Event` handling
-- [ ] Support multiple frames per scene with automatic layout
-- [ ] Add palette menu (reset view, save 3D, save 2D)
-- [ ] Jupyter integration improvements (avoid local file restrictions)
-- [ ] Packaging (`setup.py` / `pyproject.toml`)
+- [ ] #1 Revive and fix bitrot
+- [ ] #4 Add wobble/physics to frames
+- [ ] #5 Add color, size, and marker type parameters to scatter plots
+- [ ] #6 Implement `Renderer` backend primitives
+- [ ] #7 Implement VR controller `Event` handling
+- [ ] #8 Support multiple frames per scene with automatic layout
+- [ ] #9 Add palette menu (reset view, save 3D, save 2D)
+- [ ] #10 Improve Jupyter integration (avoid local file restrictions)
+- [ ] #11 Add packaging (`setup.py` / `pyproject.toml`)
