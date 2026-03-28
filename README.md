@@ -1,4 +1,6 @@
-# Aim
+# PlotVR
+
+![3D scatter plot preview](docs/screenshot.png)
 
 **Create a python module that allows plotting data in VR and manipulating the view there.**
 
