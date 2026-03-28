@@ -162,13 +162,26 @@ When adding a new artist class:
 
 Development happens on the `master` branch directly.
 
-There are no build, lint, or test commands. The typical development loop is:
+### Setup (UV)
+
+```bash
+uv sync          # creates .venv and installs all dependencies
+uv sync --extra dev  # also installs Jupyter
+```
+
+### Development loop
 
 1. Edit Python files in `PlotVR/`
-2. Run `try_plotvr.py` or open `try_plotvr.ipynb` to verify output
+2. `uv run python try_plotvr.py` to verify output
 3. Open the generated `PlotVR_Figure 1.html` in a WebXR-capable browser
 
 To test in VR: open the HTML file in a browser connected to a WebXR device (e.g. Oculus Browser on Quest).
+
+### Dependency management
+
+- Add a runtime dependency: `uv add <package>`
+- Add a dev dependency: `uv add --optional dev <package>`
+- Update lockfile after manual edits to `pyproject.toml`: `uv lock`
 
 ---
 
@@ -185,4 +198,4 @@ Tracked as GitHub issues on mark-shovman/plot-vr.
 - [ ] #8 Support multiple frames per scene with automatic layout
 - [ ] #9 Add palette menu (reset view, save 3D, save 2D)
 - [ ] #10 Improve Jupyter integration (avoid local file restrictions)
-- [ ] #11 Add packaging (`setup.py` / `pyproject.toml`)
+- [x] #11 Add packaging (`pyproject.toml` + `uv.lock`)

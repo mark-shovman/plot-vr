@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "plotvr"
+version = "0.1.0"
+description = "Python module for plotting data in VR using A-Frame"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "beautifulsoup4>=4.9",
+    "ipython>=7.0",
+    "numpy>=1.19",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["PlotVR"]

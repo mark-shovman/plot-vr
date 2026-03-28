@@ -10,8 +10,7 @@ import os
 import tempfile
 import webbrowser
 
-from IPython.core.display import display, HTML
-from IPython.display import IFrame
+from IPython.display import display, HTML, IFrame
 
 from bs4 import BeautifulSoup
 
