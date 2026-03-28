@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "jupyter>=1.0",
+    "pytest>=8.3.5",
 ]
 
 [tool.hatch.build.targets.wheel]

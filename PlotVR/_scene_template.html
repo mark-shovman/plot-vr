@@ -4,7 +4,7 @@
         <meta content="utf-8" http-equiv="encoding">
         
         <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v4.1.2/dist/aframe-extras.min.js"></script>
         <script src="https://unpkg.com/super-hands/dist/super-hands.min.js"></script>
         <script>
           // turn controller's physics presence on only while button held down
@@ -58,9 +58,9 @@
             </a-entity>
             
             <!-- hover & drag-drop won't have any obvious effect without some additional event handlers or components. See the examples page for more -->
-            <a-box geometry="width: 0.3; height: 0.3; depth: 0.3" 
-            grabbable="" stretchable="" draggable="" 
-            color="blue" position="-0.5 1 "
+            <a-box geometry="width: 0.3; height: 0.3; depth: 0.3"
+            grabbable="" stretchable="" draggable=""
+            color="blue" position="-0.5 1 -1"
             event-set__hoveron="_event: hover-start; color: red"
             event-set__hoveroff="_event: hover-end; color: blue"></a-box>
             <a-entity id="content"></a-entity>

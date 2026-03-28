@@ -183,6 +183,13 @@ To test in VR: open the HTML file in a browser connected to a WebXR device (e.g.
 - Add a dev dependency: `uv add --optional dev <package>`
 - Update lockfile after manual edits to `pyproject.toml`: `uv lock`
 
+### Running tests
+
+```bash
+uv run pytest      # run all tests
+uv run pytest -v   # verbose output
+```
+
 ---
 
 ## Roadmap
@@ -190,7 +197,7 @@ To test in VR: open the HTML file in a browser connected to a WebXR device (e.g.
 Tracked as GitHub issues on mark-shovman/plot-vr.
 
 - [x] Separate `Frame` (position in scene) from `Axes` (scale, tick marks, labels)
-- [ ] #1 Revive and fix bitrot
+- [x] #1 Revive and fix bitrot
 - [ ] #4 Add wobble/physics to frames
 - [x] #5 Add color, size, and marker type parameters to scatter plots
 - [ ] #6 Implement `Renderer` backend primitives
