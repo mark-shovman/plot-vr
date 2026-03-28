@@ -15,7 +15,7 @@ data will be plotted relative to these axes.
 DONE: added distinction between frame and axes (see _artists.py)
 TODO: add axes graphics and interaction
 TODO: add wobble to frames
-TODO: add color, size, and marker to scatterplot
+DONE: added color (per-point), size (per-point), and marker type to scatterplot
 
 """
 
@@ -46,13 +46,13 @@ def scene(num=None):
 
     return __current_scene
 
-def plot(x, y, z, color="#FFFFFF"):
+def plot(x, y, z, color="#FFFFFF", size=0.01, marker='sphere'):
     global __current_scene
 
     if __current_scene is None:
         scene()
     axes = __current_scene.gcf().gca()
-    axes.register_data(x, y, z, color)
+    axes.register_data(x, y, z, color, size, marker)
 
 def show():
     global __current_scene, __all_scenes

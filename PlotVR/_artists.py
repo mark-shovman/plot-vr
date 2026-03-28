@@ -110,10 +110,10 @@ class Axes(Artist):
                                                 line__2="start: 0, 0, 0; end: 0 0 1; color: blue",
                                                 shadow='cast:false; receive:false'))
 
-        self._raw_data = []  # list of (x, y, z, color) tuples
+        self._raw_data = []  # list of (x, y, z, color, size, marker) tuples
 
-    def register_data(self, x, y, z, color):
-        self._raw_data.append((x, y, z, color))
+    def register_data(self, x, y, z, color, size, marker):
+        self._raw_data.append((x, y, z, color, size, marker))
 
     def show(self):
         if self._raw_data:
@@ -132,12 +132,14 @@ class Axes(Artist):
             y_min, y_max = _bounds(1)
             z_min, z_max = _bounds(2)
 
-            for x, y, z, color in self._raw_data:
+            for x, y, z, color, size, marker in self._raw_data:
                 ms = MarkerSet(parent=self,
                                x=_norm(x, x_min, x_max),
                                y=_norm(y, y_min, y_max),
                                z=_norm(z, z_min, z_max),
-                               color=color)
+                               color=color,
+                               size=size,
+                               marker=marker)
                 self._kids.append(ms)
 
             self._raw_data = []  # prevent double-render if show() called again
@@ -145,8 +147,20 @@ class Axes(Artist):
         super(Axes, self).show()
 
 
+_MARKER_TAGS = {
+    'sphere':       'a-sphere',
+    'box':          'a-box',
+    'cone':         'a-cone',
+    'cylinder':     'a-cylinder',
+    'dodecahedron': 'a-dodecahedron',
+    'octahedron':   'a-octahedron',
+    'tetrahedron':  'a-tetrahedron',
+    'torus':        'a-torus',
+}
+
 class MarkerSet(Artist):
-    def __init__(self, parent, x, y, z, color="#EF2D5E"):
+    def __init__(self, parent, x, y, z, color="#EF2D5E", size=0.01, marker='sphere'):
+        import numpy as np
 
         super(MarkerSet, self).__init__(parent)
         a_parent = self._parent.get_a_entity()
@@ -154,10 +168,15 @@ class MarkerSet(Artist):
                                            shadow='cast:false; receive:false')
         a_parent.append(self._a_entity)
 
-        for i in zip(x, y, z):
-            self._a_entity.append(self.soup.new_tag("a-sphere",
-                                                    position=f'{i[0]} {i[1]} {i[2]}',
-                                                    radius="0.01",
-                                                    color=color,
+        n = len(x)
+        tag = _MARKER_TAGS.get(marker, marker)  # accept friendly name or raw a-frame tag
+        colors = [color] * n if isinstance(color, str) else list(color)
+        sizes  = [size]  * n if np.isscalar(size)  else list(size)
+
+        for px, py, pz, pc, ps in zip(x, y, z, colors, sizes):
+            self._a_entity.append(self.soup.new_tag(tag,
+                                                    position=f'{px} {py} {pz}',
+                                                    radius=str(ps),
+                                                    color=pc,
                                                     shadow='cast:true; receive:false'
                                                     ))

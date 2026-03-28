@@ -59,10 +59,19 @@ Backend layer    (_base.py)      →  Artist (base), Renderer (stub), Event (stu
 ```python
 import PlotVR as pvr
 
-pvr.scene(num=None)          # Create or switch to a scene (int or string name)
-pvr.plot(x, y, z, color)    # Add a scatter plot to the current scene
-pvr.show()                   # Render all scenes to HTML and display in Jupyter
+pvr.scene(num=None)                              # Create or switch to a scene (int or string name)
+pvr.plot(x, y, z, color, size, marker)          # Add a scatter plot to the current scene
+pvr.show()                                       # Render all scenes to HTML and display in Jupyter
 ```
+
+**`pvr.plot()` parameters:**
+
+| Parameter | Default | Description |
+|---|---|---|
+| `x`, `y`, `z` | — | Coordinate arrays (numpy arrays) |
+| `color` | `"#FFFFFF"` | CSS color string, or array of per-point color strings |
+| `size` | `0.01` | Marker radius (A-Frame world units), or per-point array of floats |
+| `marker` | `'sphere'` | Marker shape: `'sphere'`, `'box'`, `'cone'`, `'cylinder'`, `'dodecahedron'`, `'octahedron'`, `'tetrahedron'`, `'torus'` |
 
 **Typical usage:**
 ```python
@@ -170,7 +179,7 @@ Tracked as GitHub issues on mark-shovman/plot-vr.
 - [x] Separate `Frame` (position in scene) from `Axes` (scale, tick marks, labels)
 - [ ] #1 Revive and fix bitrot
 - [ ] #4 Add wobble/physics to frames
-- [ ] #5 Add color, size, and marker type parameters to scatter plots
+- [x] #5 Add color, size, and marker type parameters to scatter plots
 - [ ] #6 Implement `Renderer` backend primitives
 - [ ] #7 Implement VR controller `Event` handling
 - [ ] #8 Support multiple frames per scene with automatic layout
