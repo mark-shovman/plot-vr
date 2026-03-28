@@ -12,7 +12,7 @@ data will be plotted relative to these axes.
 
 * https://github.com/andreasplesch/aframe-meshline-component
 
-TODO: add distinction between frame and axes
+DONE: added distinction between frame and axes (see _artists.py)
 TODO: add axes graphics and interaction
 TODO: add wobble to frames
 TODO: add color, size, and marker to scatterplot
@@ -21,7 +21,7 @@ TODO: add color, size, and marker to scatterplot
 
 __all__ = ['scene', 'plot', 'show']
 
-from ._artists import Scene, MarkerSet
+from ._artists import Scene
 
 __all_scenes = {}
 __current_scene = None
@@ -51,8 +51,8 @@ def plot(x, y, z, color="#FFFFFF"):
 
     if __current_scene is None:
         scene()
-    frame = __current_scene.gcf()
-    frame.add_artist(MarkerSet(parent=frame, x=x, y=y, z=z, color=color))
+    axes = __current_scene.gcf().gca()
+    axes.register_data(x, y, z, color)
 
 def show():
     global __current_scene, __all_scenes

@@ -163,7 +163,7 @@ To test in VR: open the HTML file in a browser connected to a WebXR device (e.g.
 
 ## Roadmap (from README and code TODOs)
 
-- [ ] Separate `Frame` (position in scene) from `Axes` (scale, tick marks, labels)
+- [x] Separate `Frame` (position in scene) from `Axes` (scale, tick marks, labels)
 - [ ] Add wobble/physics to frames
 - [ ] Add color, size, and marker type parameters to scatter plots
 - [ ] Implement `Renderer` backend primitives
