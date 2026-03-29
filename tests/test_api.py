@@ -63,7 +63,7 @@ class TestScatterFunction:
         x = np.array([0.0, 1.0])
         PlotVR.scatter(x, x, x)
         axes = PlotVR.figure(num=1).gcf().gca()
-        _, _, _, color, size, marker = axes._raw_data[0]
+        _, _, _, color, size, marker, _ = axes._raw_data[0]
         assert color == '#FFFFFF'
         assert size == 0.01
         assert marker == 'sphere'
