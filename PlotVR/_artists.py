@@ -109,10 +109,10 @@ class Axes(Artist):
                                                 line__2="start: 0, 0, 0; end: 0 0 1; color: blue",
                                                 shadow='cast:false; receive:false'))
 
-        self._raw_data = []  # list of (x, y, z, color, size, marker) tuples
+        self._raw_data = []  # list of (x, y, z, color, size, marker, event) tuples
 
-    def register_data(self, x, y, z, color, size, marker):
-        self._raw_data.append((x, y, z, color, size, marker))
+    def register_data(self, x, y, z, color, size, marker, event=None):
+        self._raw_data.append((x, y, z, color, size, marker, event))
 
     def show(self):
         if self._raw_data:
@@ -131,14 +131,15 @@ class Axes(Artist):
             y_min, y_max = _bounds(1)
             z_min, z_max = _bounds(2)
 
-            for x, y, z, color, size, marker in self._raw_data:
+            for x, y, z, color, size, marker, event in self._raw_data:
                 ms = MarkerSet(parent=self,
                                x=_norm(x, x_min, x_max),
                                y=_norm(y, y_min, y_max),
                                z=_norm(z, z_min, z_max),
                                color=color,
                                size=size,
-                               marker=marker)
+                               marker=marker,
+                               event=event)
                 self._kids.append(ms)
 
             self._raw_data = []  # prevent double-render if show() called again
@@ -158,7 +159,8 @@ _MARKER_TAGS = {
 }
 
 class MarkerSet(Artist):
-    def __init__(self, parent, x, y, z, color="#EF2D5E", size=0.01, marker='sphere'):
+    def __init__(self, parent, x, y, z, color="#EF2D5E", size=0.01, marker='sphere',
+                 event=None):
         import numpy as np
 
         super(MarkerSet, self).__init__(parent)
@@ -172,10 +174,27 @@ class MarkerSet(Artist):
         colors = [color] * n if isinstance(color, str) else list(color)
         sizes  = [size]  * n if np.isscalar(size)  else list(size)
 
-        for px, py, pz, pc, ps in zip(x, y, z, colors, sizes):
-            self._a_entity.append(self.soup.new_tag(tag,
-                                                    position=f'{px} {py} {pz}',
-                                                    radius=str(ps),
-                                                    color=pc,
-                                                    shadow='cast:true; receive:false'
-                                                    ))
+        # Resolve annotation texts once so we can index per-point below.
+        if event is not None and event._annotation is not None:
+            ann_texts, _, _ = event._annotation
+            if isinstance(ann_texts, str):
+                ann_texts = [ann_texts] * n
+            else:
+                ann_texts = list(ann_texts)
+        else:
+            ann_texts = None
+
+        event_attrs = event.to_aframe_attrs() if event is not None else {}
+
+        for i, (px, py, pz, pc, ps) in enumerate(zip(x, y, z, colors, sizes)):
+            marker_tag = self.soup.new_tag(tag,
+                                           position=f'{px} {py} {pz}',
+                                           radius=str(ps),
+                                           color=pc,
+                                           shadow='cast:true; receive:false',
+                                           **event_attrs)
+            if ann_texts is not None:
+                label = event.make_annotation_tag(self.soup, ann_texts[i])
+                if label is not None:
+                    marker_tag.append(label)
+            self._a_entity.append(marker_tag)

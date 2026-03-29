@@ -19,9 +19,10 @@ DONE: added color (per-point), size (per-point), and marker type to scatterplot
 
 """
 
-__all__ = ['figure', 'scatter', 'show']
+__all__ = ['figure', 'scatter', 'show', 'Event']
 
 from ._artists import Scene
+from ._base import Event
 
 __all_scenes = {}
 __current_scene = None
@@ -46,13 +47,13 @@ def figure(num=None):
 
     return __current_scene
 
-def scatter(x, y, z, color="#FFFFFF", size=0.01, marker='sphere'):
+def scatter(x, y, z, color="#FFFFFF", size=0.01, marker='sphere', event=None):
     global __current_scene
 
     if __current_scene is None:
         figure()
     axes = __current_scene.gcf().gca()
-    axes.register_data(x, y, z, color, size, marker)
+    axes.register_data(x, y, z, color, size, marker, event)
 
 def show():
     global __current_scene, __all_scenes
