@@ -124,7 +124,7 @@ Picked the project back up after a long gap. A session of focused tidying and fe
 
 * **Frame → Frame + Axes split** — the `Frame` class was doing too much. Split out a new `Axes` class that owns the framebounds visualisation, axis lines, and — crucially — data normalisation. Coordinates are now scaled to [0, 1] at `show()` time by computing global min/max across all registered datasets. Previously, data outside [0, 1] would simply overflow the bounding box.
 
-* **Scatter plot parameters** — `pvr.plot()` now accepts `size` (scalar or per-point array) and `marker` (sphere, box, cone, cylinder, dodecahedron, octahedron, tetrahedron, torus), and `color` works as either a single CSS string or a per-point array.
+* **Scatter plot parameters** — `pvr.scatter()` now accepts `size` (scalar or per-point array) and `marker` (sphere, box, cone, cylinder, dodecahedron, octahedron, tetrahedron, torus), and `color` works as either a single CSS string or a per-point array.
 
 * **Packaging** — added `pyproject.toml` with hatchling build backend and a `uv.lock` lockfile. Install with `uv sync`. Fixed an IPython 9 import breakage (`display` moved from `IPython.core.display` to `IPython.display`) while at it.
 
