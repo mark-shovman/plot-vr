@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "beautifulsoup4>=4.9",
+    "ipykernel>=6.29.5",
     "ipython>=7.0",
     "numpy>=1.19",
     "pillow>=10.4.0",
