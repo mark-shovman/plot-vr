@@ -20,6 +20,66 @@
               })
             }
           })
+
+          // one-hand grab: translate + rotate; two-hand grab: also scale
+          AFRAME.registerComponent('frame-grab', {
+            init: function () {
+              this._grabs = new Map() // grabberEl → {lastPos, lastQuat}
+              this._scratchPos = new THREE.Vector3()
+              this._scratchQuat = new THREE.Quaternion()
+              this._deltaQuat = new THREE.Quaternion()
+              this.el.addEventListener('grab-start', this._onGrabStart.bind(this))
+              this.el.addEventListener('grab-end',   this._onGrabEnd.bind(this))
+            },
+            _onGrabStart: function (evt) {
+              var hand = evt.detail.hand
+              if (!hand) return
+              var pos = new THREE.Vector3()
+              var quat = new THREE.Quaternion()
+              hand.object3D.getWorldPosition(pos)
+              hand.object3D.getWorldQuaternion(quat)
+              this._grabs.set(hand, { lastPos: pos, lastQuat: quat })
+            },
+            _onGrabEnd: function (evt) {
+              this._grabs.delete(evt.detail.hand)
+            },
+            tick: function () {
+              var n = this._grabs.size
+              if (n === 0) return
+              var frame = this.el.object3D
+              var entries = Array.from(this._grabs.entries())
+              if (n === 1) {
+                var hand = entries[0][0]
+                var st   = entries[0][1]
+                hand.object3D.getWorldPosition(this._scratchPos)
+                hand.object3D.getWorldQuaternion(this._scratchQuat)
+                // translate
+                frame.position.add(this._scratchPos.clone().sub(st.lastPos))
+                // rotate: deltaQ = curQ * inv(lastQ), applied in world space
+                this._deltaQuat.copy(this._scratchQuat).multiply(st.lastQuat.clone().invert())
+                frame.quaternion.premultiply(this._deltaQuat)
+                st.lastPos.copy(this._scratchPos)
+                st.lastQuat.copy(this._scratchQuat)
+              } else if (n === 2) {
+                var h0 = entries[0][0], s0 = entries[0][1]
+                var h1 = entries[1][0], s1 = entries[1][1]
+                var p0 = new THREE.Vector3()
+                var p1 = new THREE.Vector3()
+                h0.object3D.getWorldPosition(p0)
+                h1.object3D.getWorldPosition(p1)
+                var prevMid = s0.lastPos.clone().add(s1.lastPos).multiplyScalar(0.5)
+                var curMid  = p0.clone().add(p1).multiplyScalar(0.5)
+                // translate by midpoint delta
+                frame.position.add(curMid.clone().sub(prevMid))
+                // scale by span ratio
+                var prevSpan = s0.lastPos.distanceTo(s1.lastPos)
+                var curSpan  = p0.distanceTo(p1)
+                if (prevSpan > 0.001) { frame.scale.multiplyScalar(curSpan / prevSpan) }
+                s0.lastPos.copy(p0)
+                s1.lastPos.copy(p1)
+              }
+            }
+          })
         </script>
     </head>
     <title>PlotVR Figure</title>
@@ -27,11 +87,10 @@
         <a-scene>
             <a-assets>        
             <a-mixin id="frame_mix"
-                     hoverable="" grabbable="" stretchable="" draggable=""
+                     hoverable=""
                      event-set__hoveron="_event: hover-start; material.opacity: 1; transparent: false"
-                     event-set__hoveroff="_event: hover-end; material.opacity: 0.2; transparent: true"
-                     >
-                     </a-mixin>  
+                     event-set__hoveroff="_event: hover-end; material.opacity: 0.2; transparent: true">
+            </a-mixin>
                            
             <a-mixin id="touch" phase-shift=""
                      physics-collider="" collision-filter="collisionForces: false"

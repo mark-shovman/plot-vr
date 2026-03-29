@@ -157,6 +157,70 @@ class TestAxes:
 
 
 # ---------------------------------------------------------------------------
+# Frame grab interaction
+# ---------------------------------------------------------------------------
+
+class TestFrameGrab:
+    def _scene(self):
+        return Scene()
+
+    def test_frame_has_frame_grab_component(self):
+        s = self._scene()
+        assert s.soup.find(id='frame').has_attr('frame-grab')
+
+    def test_frame_has_grabbable(self):
+        s = self._scene()
+        assert s.soup.find(id='frame').has_attr('grabbable')
+
+    def test_grab_surface_present(self):
+        s = self._scene()
+        assert s.soup.find(id='frame-grab-surface') is not None
+
+    def test_grab_surface_is_child_of_frame(self):
+        s = self._scene()
+        frame = s.soup.find(id='frame')
+        assert frame.find(id='frame-grab-surface') is not None
+
+    def test_grab_surface_has_static_body(self):
+        s = self._scene()
+        assert s.soup.find(id='frame-grab-surface').has_attr('static-body')
+
+    def test_grab_surface_is_invisible_box(self):
+        s = self._scene()
+        gs = s.soup.find(id='frame-grab-surface')
+        assert 'box' in gs['geometry']
+        assert 'false' in gs['material']  # visible: false
+
+    def test_grab_surface_position(self):
+        s = self._scene()
+        assert s.soup.find(id='frame-grab-surface')['position'] == '0.5 0.5 0.5'
+
+    def test_framebounds_retains_mixin(self):
+        s = self._scene()
+        assert s.soup.find(id='framebounds').get('mixin') == 'frame_mix'
+
+    def test_framebounds_has_no_direct_grabbable(self):
+        s = self._scene()
+        assert not s.soup.find(id='framebounds').has_attr('grabbable')
+
+    def test_frame_mix_mixin_has_hoverable(self):
+        s = self._scene()
+        assert s.soup.find(id='frame_mix').has_attr('hoverable')
+
+    def test_frame_mix_mixin_lacks_grabbable(self):
+        s = self._scene()
+        assert not s.soup.find(id='frame_mix').has_attr('grabbable')
+
+    def test_frame_mix_mixin_lacks_stretchable(self):
+        s = self._scene()
+        assert not s.soup.find(id='frame_mix').has_attr('stretchable')
+
+    def test_frame_grab_js_component_in_template(self):
+        s = self._scene()
+        assert "registerComponent('frame-grab'" in str(s.soup)
+
+
+# ---------------------------------------------------------------------------
 # MarkerSet
 # ---------------------------------------------------------------------------
 

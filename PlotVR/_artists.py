@@ -81,6 +81,20 @@ class Frame(Artist):
                                                              position="0 1 -1.5",
                                                              scale="1 1 1",
                                                              shadow='cast:false; receive:false')
+        self._a_entity['frame-grab'] = ''
+        self._a_entity['grabbable'] = ''
+
+        # Invisible 1×1×1 box centred at 0.5 0.5 0.5 (matching framebounds / normalised data
+        # volume) so cannon.js physics-collider on the controllers can detect the frame entity.
+        grab_surface = self.soup.new_tag("a-entity",
+                                         id='frame-grab-surface',
+                                         geometry="primitive: box; width: 1; height: 1; depth: 1",
+                                         material="visible: false",
+                                         position="0.5 0.5 0.5",
+                                         shadow='cast:false; receive:false')
+        grab_surface['static-body'] = ''
+        self._a_entity.append(grab_surface)
+
         a_parent.append(self._a_entity)
 
         axes = Axes(parent=self)
