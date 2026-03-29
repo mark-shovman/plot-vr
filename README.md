@@ -116,6 +116,24 @@ So, it seems that, though I like the architecture, most of it will have to be re
 
 * Tried to show the scene in Jupyter via IFrame. Almost works, but fails on 'jquery.min.js:6084 Not allowed to load local resource'. There are ways around it, e.g. saving the temp file in a project dorectory. Later.
 
+## 29 Mar 2026
+
+Picked the project back up after a long gap. A session of focused tidying and feature work — all on the `master` branch.
+
+* **CLAUDE.md added** — wrote a comprehensive guide to the codebase for AI assistants: architecture overview, public API, HTML/A-Frame output structure, artist extension pattern, known issues, and a roadmap linked to GitHub issues.
+
+* **Frame → Frame + Axes split** — the `Frame` class was doing too much. Split out a new `Axes` class that owns the framebounds visualisation, axis lines, and — crucially — data normalisation. Coordinates are now scaled to [0, 1] at `show()` time by computing global min/max across all registered datasets. Previously, data outside [0, 1] would simply overflow the bounding box.
+
+* **Scatter plot parameters** — `pvr.plot()` now accepts `size` (scalar or per-point array) and `marker` (sphere, box, cone, cylinder, dodecahedron, octahedron, tetrahedron, torus), and `color` works as either a single CSS string or a per-point array.
+
+* **Packaging** — added `pyproject.toml` with hatchling build backend and a `uv.lock` lockfile. Install with `uv sync`. Fixed an IPython 9 import breakage (`display` moved from `IPython.core.display` to `IPython.display`) while at it.
+
+* **Bitrot fixes** — the `cdn.rawgit.com` CDN for aframe-extras was dead (rawgit shut down in 2019); migrated to `cdn.jsdelivr.net`. Also fixed a malformed `<a-box position="-0.5 1 ">` in the scene template (missing z coordinate).
+
+* **Test suite** — 54 pytest tests covering the full artist layer (normalisation edge cases, all marker types, per-point colour/size) and the scripting API (scene switching, file output, multi-scene show). Run with `uv run pytest`.
+
+* **Preview image** — generated `docs/screenshot.png`, an isometric 3D scatter render, and embedded it at the top of this README.
+
 
 
 
