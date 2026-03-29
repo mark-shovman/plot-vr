@@ -14,9 +14,9 @@ from IPython.display import display, HTML, IFrame
 
 from bs4 import BeautifulSoup
 
-from ._base import Artist
+from ._base import Artist, Renderer
 
-__all__ = ['Scene', 'Frame', 'Axes']
+__all__ = ['Scene', 'Frame', 'Axes', 'ImagePlane']
 
 class Scene(Artist):
     __html_template_fname = "_scene_template.html"
@@ -198,3 +198,39 @@ class MarkerSet(Artist):
                 if label is not None:
                     marker_tag.append(label)
             self._a_entity.append(marker_tag)
+
+
+class ImagePlane(Artist):
+    """Artist that places a 2-D image on a rectangle in 3-D world space.
+
+    Delegates HTML generation to :meth:`Renderer.draw_image`.
+
+    Parameters
+    ----------
+    parent : Artist
+        Parent artist (typically an :class:`Axes`).
+    im : numpy.ndarray or PIL.Image.Image
+        Pixel data.  Arrays must have shape ``(H, W, 3)`` or ``(H, W, 4)``
+        with dtype ``uint8`` or float in ``[0, 1]``.
+    x, y, z : float
+        World-space centre position in the frame's normalised ``[0, 1]``
+        coordinate space.
+    width : float or None
+        Width of the image plane in A-Frame world units.
+    height : float or None
+        Height of the image plane in A-Frame world units.
+    rotation : str or tuple/list of three numbers
+        A-Frame ``"rx ry rz"`` rotation in degrees (default ``"0 0 0"``).
+    """
+
+    def __init__(self, parent, im, x=0.5, y=0.5, z=0.0,
+                 width=None, height=None, rotation="0 0 0"):
+        super().__init__(parent)
+        a_parent = self._parent.get_a_entity()
+        self._a_entity = Renderer.draw_image(
+            self.soup, im,
+            x=x, y=y, z=z,
+            width=width, height=height,
+            rotation=rotation,
+        )
+        a_parent.append(self._a_entity)

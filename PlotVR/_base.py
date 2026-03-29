@@ -38,7 +38,85 @@ class Renderer():
   	* draw_3D_mesh - the main primitive for 3D
   	* draw_volumetric_data - tricky, but important to get right (later)
     """
-    pass
+
+    @staticmethod
+    def draw_image(soup, im, x=0.5, y=0.5, z=0.0,
+                   width=None, height=None, rotation="0 0 0"):
+        """Render a 2-D image onto a rectangle in 3-D world space.
+
+        Parameters
+        ----------
+        soup : BeautifulSoup
+            Document used to create the tag.
+        im : numpy.ndarray or PIL.Image.Image
+            Pixel data.  Arrays must have shape ``(H, W, 3)`` or ``(H, W, 4)``
+            with dtype ``uint8`` or float in ``[0, 1]``.
+        x, y, z : float
+            World-space centre position of the image plane.
+        width : float or None
+            Width of the plane in A-Frame world units.  When both *width* and
+            *height* are ``None``, *width* defaults to ``1.0``.  If only one
+            dimension is given the other is derived to preserve the pixel
+            aspect ratio.
+        height : float or None
+            Height of the plane in A-Frame world units.
+        rotation : str or tuple/list of three numbers
+            A-Frame rotation ``"rx ry rz"`` in degrees (default ``"0 0 0"``).
+
+        Returns
+        -------
+        bs4.element.Tag
+            An ``<a-image>`` entity ready to be appended to the scene graph.
+        """
+        import io
+        import base64
+        import numpy as np
+        from PIL import Image as PILImage
+
+        # --- normalise *rotation* to a string --------------------------------
+        if not isinstance(rotation, str):
+            rotation = ' '.join(str(v) for v in rotation)
+
+        # --- normalise input to PIL Image ------------------------------------
+        if isinstance(im, PILImage.Image):
+            pil_img = im
+            img_w, img_h = pil_img.size
+        elif isinstance(im, np.ndarray):
+            arr = im
+            if arr.dtype != np.uint8:
+                arr = (np.clip(arr, 0.0, 1.0) * 255).astype(np.uint8)
+            pil_img = PILImage.fromarray(arr)
+            img_h, img_w = arr.shape[:2]
+        else:
+            raise TypeError(
+                "im must be a numpy.ndarray (H×W×3/4, uint8 or float) "
+                "or a PIL Image."
+            )
+
+        # --- resolve width / height, preserving aspect ratio -----------------
+        aspect = img_w / img_h
+        if width is None and height is None:
+            width = 1.0
+            height = round(width / aspect, 6)
+        elif width is None:
+            width = round(height * aspect, 6)
+        elif height is None:
+            height = round(width / aspect, 6)
+
+        # --- encode image as PNG data URI ------------------------------------
+        buf = io.BytesIO()
+        pil_img.save(buf, format='PNG')
+        data_uri = 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()
+
+        # --- build <a-image> tag ---------------------------------------------
+        return soup.new_tag(
+            'a-image',
+            src=data_uri,
+            width=str(width),
+            height=str(height),
+            position=f'{x} {y} {z}',
+            rotation=rotation,
+        )
 
 class Event():
     """
