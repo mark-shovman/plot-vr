@@ -19,7 +19,7 @@ DONE: added color (per-point), size (per-point), and marker type to scatterplot
 
 """
 
-__all__ = ['figure', 'scatter', 'image', 'show', 'Event']
+__all__ = ['figure', 'scatter', 'image', 'subplot', 'show', 'Event']
 
 from ._artists import Scene
 from ._base import Event
@@ -78,6 +78,30 @@ def image(im, x=0.5, y=0.5, z=0.0, width=None, height=None, rotation="0 0 0"):
     plane = ImagePlane(parent=axes, im=im, x=x, y=y, z=z,
                        width=width, height=height, rotation=rotation)
     axes._kids.append(plane)
+
+
+def subplot():
+    """Add a new frame to the current scene and make it the active frame.
+
+    Adds a second (or further) subplot to the current scene.  Frames are
+    automatically repositioned in an arc around the user each time a new
+    frame is added.  Returns the new :class:`~PlotVR._artists.Frame` so
+    callers can inspect or further configure it.
+
+    Typical usage::
+
+        import numpy as np
+        import PlotVR as pvr
+
+        pvr.scatter(x1, y1, z1, color='#f00')   # goes into frame 0
+        pvr.subplot()                            # add frame 1
+        pvr.scatter(x2, y2, z2, color='#0f0')   # goes into frame 1
+        pvr.show()
+    """
+    global __current_scene
+    if __current_scene is None:
+        figure()
+    return __current_scene.add_frame()
 
 
 def show():

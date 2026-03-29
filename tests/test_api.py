@@ -168,3 +168,58 @@ class TestAccessors:
     def test_gca_returns_axes(self):
         s = PlotVR.figure()
         assert isinstance(s.gcf().gca(), Axes)
+
+
+# ---------------------------------------------------------------------------
+# subplot()
+# ---------------------------------------------------------------------------
+
+class TestSubplotFunction:
+    def test_subplot_returns_frame(self):
+        PlotVR.figure()
+        f = PlotVR.subplot()
+        assert isinstance(f, Frame)
+
+    def test_subplot_auto_creates_scene(self):
+        # No figure() called yet; subplot() should still work
+        f = PlotVR.subplot()
+        assert isinstance(f, Frame)
+
+    def test_subplot_adds_frame_to_current_scene(self):
+        s = PlotVR.figure()
+        assert len(s._frames) == 1
+        PlotVR.subplot()
+        assert len(s._frames) == 2
+
+    def test_subplot_makes_new_frame_current(self):
+        s = PlotVR.figure()
+        f0 = s.gcf()
+        PlotVR.subplot()
+        assert s.gcf() is not f0
+
+    def test_scatter_targets_frame_after_subplot(self):
+        x = np.array([0.0, 1.0])
+        s = PlotVR.figure()
+        PlotVR.scatter(x, x, x, color='#f00')   # → frame 0
+        PlotVR.subplot()                          # → frame 1 is now current
+        PlotVR.scatter(x, x, x, color='#0f0')   # → frame 1
+
+        ax0 = s._frames[0].gca()
+        ax1 = s._frames[1].gca()
+        assert len(ax0._raw_data) == 1
+        assert ax0._raw_data[0][3] == '#f00'
+        assert len(ax1._raw_data) == 1
+        assert ax1._raw_data[0][3] == '#0f0'
+
+    def test_multiple_subplots_all_in_same_scene(self):
+        s = PlotVR.figure()
+        PlotVR.subplot()
+        PlotVR.subplot()
+        assert len(s._frames) == 3
+
+    def test_subplot_does_not_affect_other_scenes(self):
+        s1 = PlotVR.figure(num=1)
+        s2 = PlotVR.figure(num=2)
+        PlotVR.subplot()  # adds to s2 (current scene)
+        assert len(s1._frames) == 1
+        assert len(s2._frames) == 2

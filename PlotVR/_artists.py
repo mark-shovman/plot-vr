@@ -7,6 +7,7 @@ Created on Wed Apr  8 22:47:45 2020
 """
 
 import base64
+import math
 import os
 
 from IPython.display import display, IFrame
@@ -17,17 +18,37 @@ from ._base import Artist, Renderer
 
 __all__ = ['Scene', 'Frame', 'Axes', 'ImagePlane']
 
+
+def _compute_layout(n):
+    """Return list of (position_str, rotation_str) for n frames arranged in an arc."""
+    if n == 0:
+        return []
+    if n == 1:
+        return [('0 1 -1.5', '0 0 0')]
+    radius = 1.5
+    spread_deg = min(180.0, (n - 1) * 45.0)
+    result = []
+    for i in range(n):
+        angle_deg = -spread_deg / 2 + i * spread_deg / (n - 1)
+        angle_rad = math.radians(angle_deg)
+        x = round(radius * math.sin(angle_rad), 4)
+        z = round(-radius * math.cos(angle_rad), 4)
+        rot_y = round(-angle_deg, 1)
+        result.append((f'{x} 1 {z}', f'0 {rot_y} 0'))
+    return result
+
+
 class Scene(Artist):
     __html_template_fname = "_scene_template.html"
 
     def __init__(self, name=None):
         super(Scene, self).__init__()
-        
+
         try:
             self_path = os.path.dirname(__file__)
         except NameError:
             self_path = ''
-        
+
         with open(os.path.join(self_path, Scene.__html_template_fname)) as fp:
             self.soup = BeautifulSoup(fp, features="html.parser")
 
@@ -40,10 +61,28 @@ class Scene(Artist):
                 self.soup.title.string = str(name)
 
         self._a_entity = self.soup.find_all(id='content')[0]
+        self._frames = []
+        self._add_frame()
 
-        frame = Frame(parent=self)
+    def _add_frame(self):
+        """Create a new Frame, append it, and update the spatial layout."""
+        idx = len(self._frames)
+        frame = Frame(parent=self, index=idx)
         self._kids.append(frame)
+        self._frames.append(frame)
         self._current_frame = frame
+        self._relayout()
+        return frame
+
+    def _relayout(self):
+        """Reposition all frames based on current frame count."""
+        positions = _compute_layout(len(self._frames))
+        for frame, (pos, rot) in zip(self._frames, positions):
+            frame.set_position(pos, rot)
+
+    def add_frame(self):
+        """Add a new Frame to the scene, update layout, and return it."""
+        return self._add_frame()
 
     def gcf(self):
         return self._current_frame
@@ -59,10 +98,11 @@ class Scene(Artist):
         return str(self.soup)
 
 class Frame(Artist):
-    def __init__(self, parent):
+    def __init__(self, parent, index=0):
         super(Frame, self).__init__(parent)
         a_parent = self._parent.get_a_entity()
-        self._a_entity = self.soup.new_tag("a-entity", id='frame',
+        self._index = index
+        self._a_entity = self.soup.new_tag("a-entity", id=f'frame-{index}',
                                                              position="0 1 -1.5",
                                                              scale="1 1 1",
                                                              shadow='cast:false; receive:false')
@@ -72,7 +112,7 @@ class Frame(Artist):
         # Invisible 1×1×1 box centred at 0.5 0.5 0.5 (matching framebounds / normalised data
         # volume) so cannon.js physics-collider on the controllers can detect the frame entity.
         grab_surface = self.soup.new_tag("a-entity",
-                                         id='frame-grab-surface',
+                                         id=f'frame-grab-surface-{index}',
                                          geometry="primitive: box; width: 1; height: 1; depth: 1",
                                          material="visible: false",
                                          position="0.5 0.5 0.5",
@@ -82,27 +122,32 @@ class Frame(Artist):
 
         a_parent.append(self._a_entity)
 
-        axes = Axes(parent=self)
+        axes = Axes(parent=self, index=index)
         self._kids.append(axes)
         self._current_axes = axes
+
+    def set_position(self, position, rotation="0 0 0"):
+        """Update the A-Frame position and rotation of this frame entity."""
+        self._a_entity['position'] = position
+        self._a_entity['rotation'] = rotation
 
     def gca(self):
         return self._current_axes
 
 
 class Axes(Artist):
-    def __init__(self, parent):
+    def __init__(self, parent, index=0):
         super(Axes, self).__init__(parent)
         self._a_entity = self._parent.get_a_entity()  # reuse Frame's entity; no new wrapper
 
-        self._a_entity.append(self.soup.new_tag("a-entity", id='framebounds',
+        self._a_entity.append(self.soup.new_tag("a-entity", id=f'framebounds-{index}',
                                                 geometry="primitive: box",
                                                 position="0.5 0.5 0.5",
                                                 material="color: blue; side:back; transparent:true; opacity:0.2; flatShading: true",
                                                 shadow='cast:false; receive:false',
                                                 mixin='frame_mix'))
 
-        self._a_entity.append(self.soup.new_tag("a-entity", id='axes',
+        self._a_entity.append(self.soup.new_tag("a-entity", id=f'axes-{index}',
                                                 line__0="start: 0, 0, 0; end: 1 0 0; color: red",
                                                 line__1="start: 0, 0, 0; end: 0 1 0; color: green",
                                                 line__2="start: 0, 0, 0; end: 0 0 1; color: blue",
