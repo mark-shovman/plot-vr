@@ -193,7 +193,7 @@ class TestImagePlane:
 
     def test_plane_is_child_of_frame_entity(self):
         s, _ = self._scene_and_plane()
-        frame = s.soup.find(id='frame')
+        frame = s.soup.find(id='frame-0')
         assert frame.find('a-image') is not None
 
     def test_default_position(self):
