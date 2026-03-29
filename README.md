@@ -13,29 +13,34 @@
 # User stories
 
 ## Single-user
-* Danny (teh data analyst) is writing python code analysing some data.
-* He imports this module, and calls its function to plot his data.
-* A plot window opens, similar to 3D plot of matplotlib, but with an additional button 'View in VR'
-* Danny presses this button, puts on his VR headset, and sees the plot in VR
-* He can rotate/move/scale it with controllers, like in Google Sketch
-* There is a hand-held palette menu (again, like in Sketch) with options like 'Reset View', 'Save 3D', 'Save 2D' etc.
+
+* Danny (the data analyst) is writing python code analysing some data.
+* They import this module and call its function to plot their data.
+* A plot window opens, similar to a 3D plot of matplotlib, but with an additional button 'View in VR'
+* Danny presses this button, puts on their VR headset, and sees the plot in VR
+* They can rotate/move/scale it with controllers, like in Google Sketch
+* There is a hand-held palette menu (again, like in Sketch) with options like 'Reset View,' 'Save 3D,' 'Save 2D,' etc.
 
 ## Asymmetric collaboration
-* Alice (Danny's colleague) comes up to his table to discuss the data, but there is only one VR headset.
+
+* Alice (Danny's colleague) comes up to their table to discuss the data, but there is only one VR headset.
 * Danny, wearing the headset, positions a 'camera' gewgaw (3D UI element) in VR.
 * this gewgaw corresponds and controls the window view of the data that Alice can see and interact with.
-* it has a look and feel of a smartphone, with a screen on the back that shows exactly what Alice is seeing
+* it has the look and feel of a smartphone, with a screen on the back that shows exactly what Alice is seeing
 * it can be moved by Danny in VR, or by Alice outside, using the standard 3D mouse controls.
-* mouse selection by Alice is visible to Danni as a ray coming from the gewgaw, highlighting parts of the plotted data.
+* mouse selection by Alice is visible to Danny as a ray coming from the gewgaw, highlighting parts of the plotted data.
 
 ## Symmetric collaboration
+
 * TBD: Danny and Alice are both in VR, in the same virtual space created by Danny
 
 ## Asymmetric presentation
+
 * TBD: Danny in VR, Bob (the boss, not a data analyst) not in VR; -or- Bob in VR, Danny outside talking Bob through it
 
 ## Symmetric presentation
-* TBD: Danny, Bob and Alice are all in the same VR space, Danny tells a story.
+
+* TBD: Danny, Bob, and Alice are all in the same VR space, Danny tells a story.
 
 # Tech stack
 * A-frame for VR rendering

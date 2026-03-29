@@ -1,4 +1,5 @@
 """Unit tests for VR controller Event handling (issue #7)."""
+import base64
 import numpy as np
 import pytest
 
@@ -294,27 +295,29 @@ class TestScatterEventParam:
         assert hasattr(pvr, 'Event')
         assert pvr.Event is Event
 
-    def test_event_survives_show(self, tmp_path, monkeypatch):
+    def test_event_survives_show(self):
         from unittest.mock import patch
-        monkeypatch.chdir(tmp_path)
-        with patch('PlotVR._artists.display'):
+        with patch('PlotVR._artists.display'), \
+             patch('PlotVR._artists.IFrame') as mock_iframe:
             x = np.array([0.0, 0.5, 1.0])
             ev = Event().on(Event.HOVER_START, 'material.color', '#FF0')
             pvr.scatter(x, x, x, event=ev)
             pvr.show()
-        html = (tmp_path / 'PlotVR_Figure 1.html').read_text()
+        data_uri = mock_iframe.call_args[1]['src']
+        html = base64.b64decode(data_uri.split(',', 1)[1]).decode('utf-8')
         assert 'event-set__0' in html
         assert 'hover-start' in html
 
-    def test_annotation_in_html_after_show(self, tmp_path, monkeypatch):
+    def test_annotation_in_html_after_show(self):
         from unittest.mock import patch
-        monkeypatch.chdir(tmp_path)
-        with patch('PlotVR._artists.display'):
+        with patch('PlotVR._artists.display'), \
+             patch('PlotVR._artists.IFrame') as mock_iframe:
             x = np.array([0.0, 1.0])
             ev = Event().annotate(['pt0', 'pt1'])
             pvr.scatter(x, x, x, event=ev)
             pvr.show()
-        html = (tmp_path / 'PlotVR_Figure 1.html').read_text()
+        data_uri = mock_iframe.call_args[1]['src']
+        html = base64.b64decode(data_uri.split(',', 1)[1]).decode('utf-8')
         assert 'a-text' in html
         assert 'pt0' in html
         assert 'pt1' in html

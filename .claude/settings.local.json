@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:Codeplot-vr -maxdepth 2 -name *test*.py -o -name test_* -o -name conftest.py)",
+      "Bash(grep -E \"\\\\.py$|^d\")"
+    ]
+  }
+}

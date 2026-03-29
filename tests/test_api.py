@@ -1,4 +1,5 @@
 """Unit tests for the scripting API (pvr.figure / pvr.scatter / pvr.show)."""
+import base64
 import importlib
 from unittest.mock import patch
 
@@ -101,46 +102,54 @@ class TestScatterFunction:
 # show()
 # ---------------------------------------------------------------------------
 
+def _decode_iframe_html(mock_iframe):
+    """Extract and decode the HTML from a data URI passed to a mocked IFrame."""
+    data_uri = mock_iframe.call_args[1]['src']
+    encoded = data_uri.split(',', 1)[1]
+    return base64.b64decode(encoded).decode('utf-8')
+
+
 class TestShowFunction:
-    def test_show_writes_html_file(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        with patch('PlotVR._artists.display'):
+    def test_show_displays_iframe_with_data_uri(self):
+        with patch('PlotVR._artists.display') as mock_display, \
+             patch('PlotVR._artists.IFrame') as mock_iframe:
             x = np.array([0.0, 1.0])
             PlotVR.scatter(x, x, x)
             PlotVR.show()
-        assert (tmp_path / 'PlotVR_Figure 1.html').exists()
+        mock_display.assert_called_once()
+        src = mock_iframe.call_args[1]['src']
+        assert src.startswith('data:text/html;base64,')
 
-    def test_show_html_contains_spheres(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        with patch('PlotVR._artists.display'):
+    def test_show_html_contains_spheres(self):
+        with patch('PlotVR._artists.display'), \
+             patch('PlotVR._artists.IFrame') as mock_iframe:
             x = np.array([0.0, 0.5, 1.0])
             PlotVR.scatter(x, x, x)
             PlotVR.show()
-        html = (tmp_path / 'PlotVR_Figure 1.html').read_text()
+        html = _decode_iframe_html(mock_iframe)
         assert 'a-sphere' in html
 
-    def test_show_multiple_scenes(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        with patch('PlotVR._artists.display'):
+    def test_show_multiple_scenes(self):
+        with patch('PlotVR._artists.display') as mock_display, \
+             patch('PlotVR._artists.IFrame'):
             x = np.array([0.0, 1.0])
             PlotVR.figure(num=1)
             PlotVR.scatter(x, x, x)
             PlotVR.figure(num=2)
             PlotVR.scatter(x, x, x)
             PlotVR.show()
-        assert (tmp_path / 'PlotVR_Figure 1.html').exists()
-        assert (tmp_path / 'PlotVR_Figure 2.html').exists()
+        assert mock_display.call_count == 2
 
-    def test_show_normalized_coordinates_in_html(self, tmp_path, monkeypatch):
-        monkeypatch.chdir(tmp_path)
-        with patch('PlotVR._artists.display'):
+    def test_show_normalized_coordinates_in_html(self):
+        with patch('PlotVR._artists.display'), \
+             patch('PlotVR._artists.IFrame') as mock_iframe:
             PlotVR.scatter(
                 np.array([10.0, 20.0]),
                 np.array([100.0, 200.0]),
                 np.array([-5.0, 5.0]),
             )
             PlotVR.show()
-        html = (tmp_path / 'PlotVR_Figure 1.html').read_text()
+        html = _decode_iframe_html(mock_iframe)
         # First point should normalize to 0 0 0
         assert 'position="0.0 0.0 0.0"' in html
         # Second point should normalize to 1 1 1

@@ -6,11 +6,10 @@ Created on Wed Apr  8 22:47:45 2020
 
 """
 
+import base64
 import os
-import tempfile
-import webbrowser
 
-from IPython.display import display, HTML, IFrame
+from IPython.display import display, IFrame
 
 from bs4 import BeautifulSoup
 
@@ -52,25 +51,11 @@ class Scene(Artist):
     def show(self):
         super(Scene, self).show()
 
-        fname = f'./PlotVR_{self.soup.title.string}.html'
-        # with tempfile.NamedTemporaryFile('w', delete=False, prefix='PlotVR_', suffix='.html') as f:
-        with open(fname, 'w') as f:
-            f.write(str(self.soup))
-            display(IFrame(src=fname, width=700, height=600))
-            # webbrowser.open('file://' + os.path.realpath(f.name), new=0)
+        html_bytes = str(self.soup).encode('utf-8')
+        data_uri = 'data:text/html;base64,' + base64.b64encode(html_bytes).decode('ascii')
+        display(IFrame(src=data_uri, width=700, height=600))
 
     def _repr_html_(self):
-        """
-
-        TODO: return an html representation, for use in Jupyter
-        https://ipython.readthedocs.io/en/stable/config/integrating.html#rich-display
-
-        Returns
-        -------
-        None.
-
-        """
-
         return str(self.soup)
 
 class Frame(Artist):
