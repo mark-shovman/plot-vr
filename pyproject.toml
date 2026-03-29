@@ -12,6 +12,7 @@ dependencies = [
     "beautifulsoup4>=4.9",
     "ipython>=7.0",
     "numpy>=1.19",
+    "pillow>=10.4.0",
 ]
 
 [project.optional-dependencies]

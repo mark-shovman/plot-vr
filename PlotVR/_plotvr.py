@@ -19,7 +19,7 @@ DONE: added color (per-point), size (per-point), and marker type to scatterplot
 
 """
 
-__all__ = ['figure', 'scatter', 'show', 'Event']
+__all__ = ['figure', 'scatter', 'image', 'show', 'Event']
 
 from ._artists import Scene
 from ._base import Event
@@ -54,6 +54,31 @@ def scatter(x, y, z, color="#FFFFFF", size=0.01, marker='sphere', event=None):
         figure()
     axes = __current_scene.gcf().gca()
     axes.register_data(x, y, z, color, size, marker, event)
+
+def image(im, x=0.5, y=0.5, z=0.0, width=None, height=None, rotation="0 0 0"):
+    """Place a 2-D image on a rectangle in the current scene.
+
+    Parameters
+    ----------
+    im : numpy.ndarray or PIL.Image.Image
+        Pixel data.  See :class:`~PlotVR._artists.ImagePlane` for details.
+    x, y, z : float
+        World-space centre position in normalised ``[0, 1]`` coordinates.
+    width : float or None
+    height : float or None
+    rotation : str or tuple/list of three numbers
+        A-Frame ``"rx ry rz"`` rotation in degrees.
+    """
+    global __current_scene
+    from ._artists import ImagePlane
+
+    if __current_scene is None:
+        figure()
+    axes = __current_scene.gcf().gca()
+    plane = ImagePlane(parent=axes, im=im, x=x, y=y, z=z,
+                       width=width, height=height, rotation=rotation)
+    axes._kids.append(plane)
+
 
 def show():
     global __current_scene, __all_scenes
